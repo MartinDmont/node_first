@@ -1,0 +1,32 @@
+const express = require('express')
+const bodyParser = require('body-parser')
+const requests = require('request')
+const https = require('https')
+
+const
+
+// let datas = require('./datas-file')
+
+const router = express.Router()
+const app = express()
+
+app.use(bodyParser.json())
+
+const api = express.Router()
+
+api.route('/infos').get( (req, res) => {
+	res.json(json_datas)
+})
+
+app.use('/api', api)
+
+app.get('/', (req, res) => {
+	res.send('WILKOM')
+})
+
+const port = 5050
+
+app.listen(5050, () => {
+	console.log('Started')}
+);
+
