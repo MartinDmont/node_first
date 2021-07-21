@@ -2,9 +2,9 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const datas = require('./datas')
 const cors = require('cors')
-const { Sequelize, Model, DataTypes } = require('sequelize');
+const { Sequelize, Model, DataTypes, DatabaseError } = require('sequelize');
 
-const sequelize = new Sequelize('api_node', 'root', 'LmOpf45)-G!z86', {
+const sequelize = new Sequelize('api_node', 'root', 'MOT_DE_PASSE', {
     host: 'localhost',
     dialect: 'mysql'
 })
@@ -22,7 +22,10 @@ const startResult = (sequelize.query("SELECT * FROM test_users"), () => {
 
 app = express()
 app.use(cors())
+app.use(express.static('public'))
 app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended : true}));
+
 
 
 app.use((res, req, next) => {
@@ -31,6 +34,7 @@ app.use((res, req, next) => {
 })
 
 const api = express.Router()
+
 
 api.get('/shop', (req, res) => {
     res.json(datas.shops)
@@ -41,16 +45,46 @@ app.get('/close', (req, res) => {
     sequelize.close()
 })
 
-api.get('/a/:name/:forename', (req, res) => {
+//  request.header('x-forwarded-for') || request.connection.remoteAddress;
+
+api.post('/addcomment', (req, res) => {
     (async () => {
+        console.log(req.body)
+        let ip =   req.connection.remoteAddress;
         console.log("sendingdatas")
         try {
-            let querry = "INSERT INTO test_users VALUES ( '" + req.params.name + "','" + req.params.forename + "');"
+            let querry = "INSERT INTO buis_comments VALUES ( \"" + ip + "\",\"" + req.body.comment + "\","+"CURRENT_DATE);"
+            querry.replace("'","\'")
             let result = sequelize.query(querry)
             res.end('Bienvenue, ' + req.params.name)
         }
         catch (error) {
             console.log(error)
+            res.end('Fini')
+        }
+    })()
+})
+
+
+api.get('/getcomments', (req, res) => {
+    (async () => {
+        let ip =   req.connection.remoteAddress;
+        console.log("sendingdatas")
+        try {
+            let querry = "SELECT * FROM buis_comments;"
+            querry.replace("'","\'")
+            let result = sequelize.query(querry).then( (datas) =>{
+                let to_send = JSON.parse(JSON.stringify(datas))
+                console.log(typeof(to_send))
+                res.json(to_send[0])
+            }, (err) => {
+                    res.end('Failed')
+                    return
+                }
+            )
+        }
+        catch (error) {
+            console.error("ERROR: ",error)
             res.end('Fini')
         }
     })()
@@ -93,8 +127,8 @@ app.get('/', (req, res) => {
     res.send('CONNECTED :) <a href="/api/ga">all</a>')
 })
 
-app.post('/t', bodyParser.json(), (req, res) => {
-    let body = req.body.name
+app.post('/t', (req, res) => {
+    let body = req.body
     console.log(body)
     res.json(body)
 })

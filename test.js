@@ -1,26 +1,18 @@
-const express = require('express')
-const bodyParser = require('body-parser')
-const cors = require('cors')
+//Import the necessary libraries/declare the necessary objects
+var express = require("express");
+var myParser = require("body-parser");
+var app = express();
 
-app = express()
-app.use(cors())
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended : true}))
 
-app.use( (req,res, next) => {
-    next()
-} )
+app.use(express.json())
+app.use(myParser.urlencoded({extended : true}));
+app.post("/yourpath", function(request, response) {
+    console.log(request.body); //This prints the JSON document received (if it is a JSON document)
+    response.end('eh meeeeerde')
+});
 
-app.get('/', (req,res) => {
-    res.send('coucou :)')
+app.get("/", (req,res) => {
+    res.end('HELOOOOOOOHOOO')
 })
 
-app.post('/p', (req,res) => {
-    console.log(req.body)
-    console.log(req.body.name)
-    res.send('received sir !')
-})
-
-app.listen(5000, () => {
-    console.log('Server stated on port 5000')
-})
+app.listen(8080);
