@@ -1,17 +1,14 @@
 const api = require('express').Router()
-const dbAccess  = require('./dataHandler').dbAccess
+const dbAccess = require('./dataHandler')
 const datas = require('./instance/datas')
 
-console.log("dbassecc : ",dbAccess)
-const dbAccesser = new dbAccess
 
-
-api.post('/addcomment',   (req, res) => {
+api.post('/addcomment', (req, res) => {
     console.log(req.body)
-    let ip =   req.connection.remoteAddress;
+    let ip = req.connection.remoteAddress;
     console.log("sendingdatas")
     try {
-        dbAccesser.addComment(ip, req.body.comment)
+        dbAccess.addComment(ip, req.body.comment)
         res.end('Bienvenue, ' + req.params.name)
     }
     catch (error) {
@@ -22,16 +19,19 @@ api.post('/addcomment',   (req, res) => {
 
 
 api.get('/getcomments', (req, res) => {
-    let ip =   req.connection.remoteAddress;
+    let ip = req.connection.remoteAddress;
     console.log("sendingdatas")
     try {
-        console.log(typeof(dbAccess))
-        let result = dbAccesser.getComments()
-        let to_send = JSON.parse(JSON.stringify(result))
-        res.status(200).json(to_send)
+        dbAccess.getComments().then(
+            result => {
+                let to_send = JSON.parse(JSON.stringify(result))
+                res.status(200).json(to_send)
+            }
+        ).catch(err => console.log(err))
+
     }
     catch (error) {
-        console.error("ERROR: ",error)
+        console.error("ERROR: ", error)
         res.end('Fini')
     }
 })
