@@ -18,8 +18,7 @@ Comment.build()
 
 
 
-const addComment = (client_ip, client_comment) => {
-  (async () => {
+const addComment = async (client_ip, client_comment) => {
     await sequelize.sync();
     var today = new Date();
     var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
@@ -31,7 +30,6 @@ const addComment = (client_ip, client_comment) => {
       date: date
     });
     return { client_ip, client_comment }
-  })();
 };
 
 const getComments = () => {
